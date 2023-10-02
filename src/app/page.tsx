@@ -1,150 +1,98 @@
 "use client";
+import Cart from "@/components/Cart";
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import SearchBar from "@/components/SearchBar";
+import axios from "axios";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [cart, setCart] = useState<string[]>([]);
+  const [cart, setCart] = useState<{}[]>([]);
+  const [itemList, setItemList] = useState([]);
+  const [filterList, setFilterList] = useState<any>([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [showCart, setShowCart] = useState(false);
 
-  const addCart = (name: string) => {
-    setCart((current) => [...current, name]);
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
+  const addCart = (item: any) => {
+    setCart((current) => {
+      const existingItem = current.find(
+        (cartItem: any) => cartItem.id === item.id
+      );
+
+      if (existingItem) {
+        // If item already exists in the cart, increase the count
+        return cart.map((cartItem: any) =>
+          cartItem.id === item.id
+            ? { ...cartItem, count: cartItem.count + 1 }
+            : cartItem
+        );
+      } else {
+        // If item doesn't exist in the cart, add it with count 1
+        return [...current, { ...item, count: 1 }];
+      }
+    });
+  };
+  useEffect(() => {
     let c = JSON.stringify(cart);
     localStorage.setItem("groceryItem", c);
-  };
+  }, [cart]);
+
+  useEffect(() => {
+    axios.get("https://fakestoreapi.com/products").then(function (response) {
+      setItemList(response.data);
+      setFilterList(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    let filterItems = itemList.filter((item: any) => {
+      const countryName = item.title.toLowerCase();
+      return countryName.startsWith(searchInput);
+    });
+    setFilterList(filterItems);
+  }, [searchInput]);
   return (
     <main className=" h-full bg-slate-300">
-      <Navbar cart={cart} />
+      <Navbar
+        cart={cart}
+        showCart={showCart}
+        setShowCart={setShowCart}
+        toggleMenu={toggleMenu}
+        isOpen={isOpen}
+      />
       <div className="flex px-2 py-[8px] md:px-20 items-center gap-x-2">
         <label className=" text-[24px]">Search:</label>
         <input
           placeholder="Search your item"
           type="text"
+          value={searchInput || ""}
+          onChange={(e) => setSearchInput(e.target.value)}
           autoFocus
           className=" text-[18px] py-[2px] px-[4px] w-full md:w-[400px] rounded-md outline-none border-none"
         />
       </div>
-      {/* <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
-        <div className="rounded-lg md:w-2/3">
-          <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
-            <img
-              src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-              alt="product-image"
-              className="w-full rounded-lg sm:w-40"
-            />
-            <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
-              <div className="mt-5 sm:mt-0">
-                <h2 className="text-lg font-bold text-gray-900">
-                  Nike Air Max 2019
-                </h2>
-                <p className="mt-1 text-xs text-gray-700">36EU - 4US</p>
-              </div>
-              <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
-                <div className="flex items-center border-gray-100">
-                  <span className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50">
-                    {" "}
-                    -{" "}
-                  </span>
-                  <input
-                    className="h-8 w-8 border bg-white text-center text-xs outline-none"
-                    type="number"
-                    value="2"
-                    min="1"
-                  />
-                  <span className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50">
-                    {" "}
-                    +{" "}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <p className="text-sm">259.000 ₭</p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="h-5 w-5 cursor-pointer duration-150 hover:text-red-500"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
-            <img
-              src="https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1131&q=80"
-              alt="product-image"
-              className="w-full rounded-lg sm:w-40"
-            />
-            <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
-              <div className="mt-5 sm:mt-0">
-                <h2 className="text-lg font-bold text-gray-900">
-                  Nike Air Max 2019
-                </h2>
-                <p className="mt-1 text-xs text-gray-700">36EU - 4US</p>
-              </div>
-              <div className="mt-4 flex justify-between im sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
-                <div className="flex items-center border-gray-100">
-                  <span className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50">
-                    {" "}
-                    -{" "}
-                  </span>
-                  <input
-                    className="h-8 w-8 border bg-white text-center text-xs outline-none"
-                    type="number"
-                    value="2"
-                    min="1"
-                  />
-                  <span className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50">
-                    {" "}
-                    +{" "}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <p className="text-sm">259.000 ₭</p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="h-5 w-5 cursor-pointer duration-150 hover:text-red-500"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       <div className=" py-4 flex flex-wrap md:gap-2 justify-center items-center lg:gap-2 xl:gap-8 w-full">
         {" "}
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
-        <ProductCard addCart={addCart} />
+        {filterList ? (
+          filterList.map((item: any, index: number) => (
+            <ProductCard item={item} addCart={addCart} />
+          ))
+        ) : (
+          <p className=" text-red-500">Loading...</p>
+        )}
       </div>
-      <p>t</p>
+      {showCart && (
+        <div className=" block h-full w-full md:hidden absolute z-50 left-0 top-0">
+          <Cart setShowCart={setShowCart} />
+        </div>
+      )}
     </main>
   );
 }

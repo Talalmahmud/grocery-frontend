@@ -7,16 +7,13 @@ import Cart from "./Cart";
 
 type Props = {
   cart?: any;
+  setShowCart?: any;
+  showCart?: any;
+  toggleMenu?: any;
+  isOpen?: any;
 };
 
-const Navbar = ({ cart }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showCart, setShowCart] = useState(false);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
+const Navbar = ({ cart, setShowCart, showCart, toggleMenu, isOpen }: Props) => {
   return (
     <nav className=" sticky top-0 left-0 w-full bg-slate-800 p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -64,7 +61,10 @@ const Navbar = ({ cart }: Props) => {
             <Link href="/contact">
               <p className="block text-gray-800 py-2">Contact</p>
             </Link>
-            <div className=" flex text-gray-800">
+            <div
+              className=" flex text-gray-800"
+              onClick={() => setShowCart(!showCart)}
+            >
               <p>Cart</p>
               <p>
                 (<span className=" text-red-400">{cart.length}</span>)

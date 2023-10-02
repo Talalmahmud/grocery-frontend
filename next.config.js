@@ -8,6 +8,15 @@ const nextConfig = {
       {
         hostname: "t4.ftcdn.net",
       },
+      {
+        hostname: "lulumart.com.bd",
+      },
+      {
+        hostname: "t3.ftcdn.net",
+      },
+      {
+        hostname: "fakestoreapi.com",
+      },
     ],
   },
 };
