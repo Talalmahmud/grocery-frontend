@@ -26,10 +26,10 @@ const Navbar = ({ cart, setShowCart, showCart, toggleMenu, isOpen }: Props) => {
             <path className="text-white">Home</path>
           </Link>
 
-          <Link href="/about">
+          <Link href="/">
             <p className="text-white">About</p>
           </Link>
-          <Link href="/contact">
+          <Link href="/">
             <p className="text-white">Contact</p>
           </Link>
         </div>
@@ -55,10 +55,10 @@ const Navbar = ({ cart, setShowCart, showCart, toggleMenu, isOpen }: Props) => {
             <Link href="/">
               <p className="block text-gray-800 py-2">Home</p>
             </Link>
-            <Link href="/about">
+            <Link href="/">
               <p className="block text-gray-800 py-2">About</p>
             </Link>
-            <Link href="/contact">
+            <Link href="/">
               <p className="block text-gray-800 py-2">Contact</p>
             </Link>
             <div
